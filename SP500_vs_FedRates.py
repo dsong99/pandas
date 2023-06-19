@@ -19,6 +19,7 @@ spxData['YearMonth'] = spxData['YearMonth'].dt.strftime('%Y%m');
 monthData=spxData.groupby('YearMonth').agg({'Prices':'max'})
 del spxData
 
+os.chdir('./data')
 ratesData = pd.read_csv('fed-funds-rate-historical-chart.csv')
 ratesData['YearMonth']=pd.to_datetime(ratesData['DATE'])
 ratesData = ratesData.rename(columns={'FEDFUNDS':'Rates'})
@@ -35,5 +36,17 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(10,5))
 mergedPd.plot(y='S&P 500 Index', ax=ax)
 mergedPd.plot(y='Rates', ax=ax, secondary_y=True)
-
+plt.savefig('1990-2023.png')
 plt.close()
+
+periods=[(199301, 200301),(200301, 201301),(201301, 202306)]
+
+for start, end in periods:
+    start=str(start)
+    end = str(end)
+    subDf = mergedPd.loc[start:end]
+    fig, ax = plt.subplots(figsize=(10, 5))
+    subDf.plot(y='S&P 500 Index', ax=ax)
+    subDf.plot(y='Rates', ax=ax, secondary_y=True)
+    plt.savefig('{}-{}.png'.format(start, end))
+    plt.close()
